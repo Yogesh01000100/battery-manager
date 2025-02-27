@@ -1,12 +1,10 @@
-import { Router } from "express"
+import { Router } from 'express';
+import { createBatteryData, getBatteryData, getBatteryFieldData } from '../controllers/manager';
 
 const router = Router();
 
-
-router.get("/", () => {
-    console.log("Han mujhe kyun bulaya??? ");
-});
-
-
+router.post('/data', createBatteryData);
+router.get('/:id', getBatteryData);
+router.get('/:id/:field', getBatteryFieldData);
 
 export default router;

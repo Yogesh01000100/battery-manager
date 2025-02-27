@@ -9,7 +9,7 @@
         margin: 20px;
       }
       .container {
-        max-width: 800px;
+        max-width: 700px;
         margin: auto;
       }
       table {
@@ -21,6 +21,7 @@
       td {
         border: 1px solid #ddd;
         padding: 8px;
+        text-align: center;
       }
       th {
         background-color: #f2f2f2;
@@ -29,18 +30,77 @@
       button {
         padding: 8px;
         margin: 5px 0;
+        width: 20%;
+      }
+      .flex-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+      .form-group label {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .button-container {
+        text-align: left;
+        margin-top: 10px;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
       }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>Battery Management Dashboard</h1>
+
       <div>
         <label for="batteryId">Battery ID:</label>
         <input type="text" id="batteryId" placeholder="e.g., 1001" />
         <button onclick="fetchBatteryData()">Fetch Data</button>
-        <button onclick="loadSampleData()">Load Sample Data</button>
       </div>
+
+      <div>
+        <h2>Add New Battery Data</h2>
+        <div class="flex-container">
+          <div class="form-group">
+            <label for="newBatteryId">Battery ID:</label>
+            <input type="text" id="newBatteryId" placeholder="e.g., 1001" />
+          </div>
+          <div class="form-group">
+            <label for="current">Current (A):</label>
+            <input type="number" id="current" placeholder="e.g., 15.2" />
+          </div>
+          <div class="form-group">
+            <label for="voltage">Voltage (V):</label>
+            <input type="number" id="voltage" placeholder="e.g., 48.7" />
+          </div>
+          <div class="form-group">
+            <label for="temperature">Temperature (°C):</label>
+            <input type="number" id="temperature" placeholder="e.g., 35.5" />
+          </div>
+          <div class="form-group">
+            <label for="time">Timestamp:</label>
+            <input type="datetime-local" id="time" />
+          </div>
+        </div>
+        <div class="button-container">
+          <button onclick="addBatteryData()">Add Battery Data</button>
+        </div>
+      </div>
+
       <div>
         <h2>Battery Data</h2>
         <table id="dataTable">
@@ -66,7 +126,7 @@
           alert("Please enter a Battery ID.");
           return;
         }
-        fetch(`/api/battery/${batteryId}`)
+        fetch(`http://localhost:3000/api/battery/${batteryId}`)
           .then((response) => response.json())
           .then((data) => {
             const tableBody = document.getElementById("tableBody");
@@ -92,13 +152,47 @@
           .catch((error) => console.error("Error fetching data:", error));
       }
 
-      function loadSampleData() {
-        fetch("/api/battery/load-sample-data", { method: "POST" })
+      function addBatteryData() {
+        const batteryId = document.getElementById("newBatteryId").value.trim();
+        const current = parseFloat(document.getElementById("current").value);
+        const voltage = parseFloat(document.getElementById("voltage").value);
+        const temperature = parseFloat(
+          document.getElementById("temperature").value
+        );
+        const time = document.getElementById("time").value;
+
+        if (
+          !batteryId ||
+          isNaN(current) ||
+          isNaN(voltage) ||
+          isNaN(temperature) ||
+          !time
+        ) {
+          alert("Please fill in all fields correctly.");
+          return;
+        }
+
+        const data = {
+          battery_id: batteryId,
+          current,
+          voltage,
+          temperature,
+          time,
+        };
+
+        fetch("http://localhost:3000/api/battery/data", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
           .then((response) => response.json())
           .then((result) => {
             alert(result.message);
+            fetchBatteryData();
           })
-          .catch((error) => console.error("Error loading sample data:", error));
+          .catch((error) => console.error("Error adding data:", error));
       }
     </script>
   </body>
