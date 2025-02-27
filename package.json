@@ -2,16 +2,18 @@
   "name": "battery_manager",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node dist/index.js",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "npm run build && nodemon dist/index.js",
+    "dev": "ts-node src/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.21.2",
+    "nodemon": "^3.1.9",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
